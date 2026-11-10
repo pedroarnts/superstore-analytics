@@ -6,11 +6,28 @@ Análise exploratória da base pública Superstore para entender por que um fatu
 
 ## 1. Problema de negócio
 
-Uma rede de varejo vende em três categorias (Tecnologia, Material de Escritório e Móveis) e dá descontos para ganhar volume. O faturamento sozinho não mostra se cada venda deixou lucro. A pergunta do projeto é:
+### Descrição do problema
+
+Uma rede de varejo vende em três categorias (Tecnologia, Material de Escritório e Móveis) e usa descontos para ganhar volume. O desconto torna a venda mais atraente, mas reduz o que sobra em cada item. Quando ele é maior do que a margem do produto, a empresa vende mais e lucra menos. Como o faturamento continua alto, o problema não aparece nos números principais. Nesta base, a empresa fatura US$ 2,30 milhões e lucra US$ 286 mil, e esse total esconde itens que deram prejuízo.
+
+A pergunta do projeto é:
 
 > **Quais categorias, subcategorias e níveis de desconto estão reduzindo o lucro, e o que a gestão pode revisar?**
 
-Por que usar dados: sem cruzar desconto, produto e lucro por item, o prejuízo fica escondido dentro do total. O resultado geral é positivo (US$ 286 mil), mas esse número mistura vendas muito lucrativas com vendas que deram prejuízo.
+### Por que isso importa
+
+A política de desconto é uma das alavancas que a gestão controla diretamente. Se ela estiver mal calibrada, cada venda extra pode aumentar o prejuízo em vez do lucro. Para as áreas comercial e financeira, saber onde o desconto ainda dá lucro e onde deixa de dar define quanta autonomia o vendedor pode ter. O mesmo problema existe em qualquer varejo que concede descontos, o que faz desta base de exemplo um bom caso de estudo.
+
+### Como a análise de dados ajuda
+
+Olhar só o total (US$ 286 mil de lucro) não mostra onde o dinheiro se perde. Com os dados por item é possível:
+
+1. separar o lucro por categoria e subcategoria;
+2. medir o lucro médio em cada nível de desconto e ver onde ele vira negativo;
+3. somar o resultado dos itens com desconto alto (prejuízo de US$ 135 mil, contra lucro de US$ 422 mil nos demais itens);
+4. cruzar desconto com categoria, para checar se o prejuízo vem do desconto ou do tipo de produto.
+
+Com isso, a recomendação à gestão deixa de ser uma opinião e passa a se apoiar em números.
 
 ---
 
@@ -136,7 +153,38 @@ As duas subcategorias são lucrativas quando o desconto fica até 20% e perdem d
 
 ---
 
-## 5. Insights
+### 4.8 Correlações
+
+Calculadas com `analise_complementar.py` sobre os 9.994 itens:
+
+| Par de variáveis | Pearson | Spearman |
+| :--- | ---: | ---: |
+| Desconto × Lucro | −0,219 | −0,543 |
+| Vendas × Lucro | 0,479 | 0,518 |
+| Desconto × Vendas | −0,028 | −0,057 |
+| Desconto × Quantidade | 0,009 | −0,001 |
+
+Como ler:
+- **Desconto é a variável mais ligada à queda do lucro.** Quanto maior o desconto, menor o lucro.
+- **Spearman é bem mais forte que Pearson.** O Pearson mede relação em linha reta; o Spearman mede se as duas variáveis andam juntas em sentidos opostos, mesmo sem ser em linha reta. A diferença combina com o que a tabela de faixas mostra: o lucro cai de forma abrupta acima de 20%, e não aos poucos.
+- **Vendas maiores acompanham lucro maior** (0,48), o que era esperado.
+- **Nesta base, desconto quase não tem relação com o valor da venda nem com a quantidade** (valores próximos de zero). Os itens com desconto alto não aparecem com mais unidades.
+- Correlação mostra associação. Ela não prova que o desconto causa a queda do lucro.
+
+### 4.9 Tendência por ano
+
+| Ano | Vendas (US$) | Lucro (US$) | Pedidos | Margem |
+| :--- | ---: | ---: | ---: | ---: |
+| 2014 | 484.247,50 | 49.543,97 | 969 | 10,23% |
+| 2015 | 470.532,51 | 61.618,60 | 1.038 | 13,10% |
+| 2016 | 609.205,60 | 81.795,17 | 1.315 | 13,43% |
+| 2017 | 733.215,26 | 93.439,27 | 1.687 | 12,74% |
+
+As vendas e o lucro crescem de 2014 a 2017 (a única queda de vendas foi em 2015). A margem subiu de 10,23% para 13,43% até 2016 e recuou para 12,74% em 2017. A base não explica essa queda; uma próxima análise poderia olhar o peso dos descontos acima de 20% em cada ano.
+
+---
+
+## 5. Insights e conclusões
 
 | # | Achado | Tipo |
 | :--- | :--- | :--- |
@@ -146,6 +194,10 @@ As duas subcategorias são lucrativas quando o desconto fica até 20% e perdem d
 | 4 | Tables e Bookcases são lucrativas até 20% de desconto e perdem acima disso | Fato |
 | 5 | O desconto acima de 20% está **associado** ao prejuízo nas três categorias | Associação (não prova causa) |
 | 6 | O prejuízo de Supplies tem outra origem, ainda não identificada | Hipótese a investigar |
+| 7 | Desconto e lucro têm correlação negativa (Pearson −0,22; Spearman −0,54); desconto quase não se relaciona com vendas nem com quantidade | Associação |
+| 8 | O lucro cresce todo ano (US$ 49,5 mil em 2014 para US$ 93,4 mil em 2017); a margem foi de 10,23% para 13,43% em 2016 e recuou para 12,74% em 2017 | Fato |
+
+**Conclusão.** A margem de 12,47% vem de dois grupos de vendas: itens com desconto até 20%, que dão lucro, e itens com desconto acima de 20%, que somam prejuízo de US$ 135 mil. Os dados apontam a revisão dos descontos acima de 20% como o primeiro passo, principalmente em Tables e Bookcases. Eles não mostram qual desconto maximiza o lucro, nem se as vendas cairiam com um limite mais baixo.
 
 ## 6. Recomendações
 
@@ -184,17 +236,19 @@ Como ler:
 ```bash
 pip install pandas
 python main.py
+python analise_complementar.py
 ```
 
-O script cria o arquivo `dados/tratado/Superstore_Tratado.csv`.
+O `main.py` cria o arquivo `dados/tratado/Superstore_Tratado.csv`. O `analise_complementar.py` lê esse arquivo e calcula as correlações e a tendência por ano.
 
 Estrutura:
 
 ```
-superstore_analytics/
+superstore-analytics/
 ├── dados/
 │   ├── bruto/Sample - Superstore.csv   # original, não é alterado
 │   └── tratado/Superstore_Tratado.csv  # gerado pelo script
 ├── main.py
+├── analise_complementar.py
 └── README.md
 ```
