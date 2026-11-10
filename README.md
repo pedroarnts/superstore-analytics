@@ -23,7 +23,7 @@ Por que usar dados: sem cruzar desconto, produto e lucro por item, o prejuízo f
 | **Tipo** | Dados estruturados (tabela única, 21 colunas) |
 | **Tamanho** | 9.994 linhas; 5.009 pedidos distintos; período de 03/01/2014 a 30/12/2017 |
 | **Moeda** | Dólar (US$) |
-| **Licença** | Conferir na página do dataset no Kaggle antes de publicar o CSV no repositório |
+| **Licença** | No Kaggle consta "Other (specified in description)", e a descrição do dataset não especifica os termos. Por isso os arquivos CSV não estão neste repositório: baixe o original pelo link da fonte |
 
 ---
 
@@ -164,7 +164,7 @@ Com base nos achados 3 a 5:
 
 ## 8. Dashboard
 
-Painel no Looker Studio: https://datastudio.google.com/reporting/8340b0df-16a7-4785-8eb5-040fd8ac15e3/page/H4DDG?s=lmBsNrshl1g
+Painel no Looker Studio: [abrir o painel](https://datastudio.google.com/reporting/8340b0df-16a7-4785-8eb5-040fd8ac15e3/page/H4DDG?s=lmBsNrshl1g)
 
 ![Painel](superstore_dash.png)
 
@@ -178,10 +178,15 @@ Como ler:
 
 ## 9. Como executar
 
+1. Baixe o arquivo `Sample - Superstore.csv` na [página do dataset no Kaggle](https://www.kaggle.com/datasets/vivek468/superstore-dataset-final) e salve em `dados/bruto/`.
+2. Instale a dependência e execute:
+
 ```bash
 pip install pandas
 python main.py
 ```
+
+O script cria o arquivo `dados/tratado/Superstore_Tratado.csv`.
 
 Estrutura:
 
