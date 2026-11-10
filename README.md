@@ -164,7 +164,7 @@ Com base nos achados 3 a 5:
 
 ## 8. Dashboard
 
-Painel no Looker Studio: **[COLE AQUI O LINK DO SEU PAINEL]**
+Painel no Looker Studio: https://datastudio.google.com/reporting/8340b0df-16a7-4785-8eb5-040fd8ac15e3/page/H4DDG?s=lmBsNrshl1g
 
 ![Painel](superstore_dash.png)
 
